@@ -1,0 +1,302 @@
+PROJECT NAME
+MyTube (simple YouTube-style Flutter learning app)
+
+GOAL OF THIS PROJECT
+This is a beginner-friendly mobile app for practice in labs.
+It demonstrates:
+1) Simple page navigation
+2) Basic sign up and login flow
+3) Passing data to widgets
+4) Displaying a list of video cards
+5) Playing online sample videos
+
+IMPORTANT DESIGN IDEA
+The app is intentionally simple so you can rewrite files quickly in class if needed.
+
+
+==================================================
+1) FULL APP FLOW (VERY SIMPLE MAP)
+==================================================
+
+App starts -> Welcome screen
+Welcome screen has 2 buttons:
+1) Sign Up -> save email/password in memory -> go to Home
+2) Log In -> check entered email/password against saved values -> if correct go to Home
+
+Home screen:
+1) Shows a list of sample videos
+2) Each video card shows thumbnail + title + channel + views
+3) Tap card -> open Video Player screen with that video URL
+4) Logout icon -> clears navigation stack and goes back to Welcome
+
+Video Player screen:
+1) Loads video from internet URL
+2) Shows loading spinner while initializing
+3) Shows play/pause button
+
+
+==================================================
+2) FILE-BY-FILE EXPLANATION
+==================================================
+
+----------------------------------
+FILE: lib/main.dart
+----------------------------------
+Purpose:
+Main entry point of the app.
+
+Code meaning:
+1) import 'package:flutter/material.dart';
+   - Imports Flutter Material widgets (Scaffold, AppBar, Text, etc).
+2) import 'welcome_page.dart';
+   - Imports first screen widget.
+3) void main() { runApp(MyApp()); }
+   - App starts here.
+   - runApp mounts root widget into screen.
+4) class MyApp extends StatelessWidget
+   - Root widget does not hold mutable state.
+5) MaterialApp(...)
+   - Sets app title, hides debug banner, and sets home page.
+6) home: WelcomePage()
+   - First visible screen is Welcome page.
+
+
+----------------------------------
+FILE: lib/auth.dart
+----------------------------------
+Purpose:
+Tiny in-memory credential storage.
+
+Code meaning:
+1) String savedEmail = '';
+2) String savedPassword = '';
+
+These two global variables hold sign up values while app is running.
+No database, no encryption, no persistence after app closes.
+
+
+----------------------------------
+FILE: lib/welcome_page.dart
+----------------------------------
+Purpose:
+Landing screen with app logo/name and navigation to auth pages.
+
+Code meaning:
+1) Imports signup and login pages.
+2) class WelcomePage extends StatelessWidget
+   - UI only, no mutable state.
+3) Scaffold
+   - Basic page structure.
+4) Column centered on screen with:
+   - Red play icon
+   - App name text (MyTube)
+   - Sign Up button
+   - Log In button
+5) Sign Up button onPressed:
+   Navigator.push(...SignUpPage())
+   - Opens sign-up page on top of stack.
+6) Log In button onPressed:
+   Navigator.push(...LoginPage())
+   - Opens login page on top of stack.
+
+
+----------------------------------
+FILE: lib/signup_page.dart
+----------------------------------
+Purpose:
+Collect email and password and store them in memory.
+
+Code meaning:
+1) class SignUpPage extends StatefulWidget
+   - Uses state because text fields/controllers are dynamic.
+2) TextEditingController emailController/passwordController
+   - Read typed input from text fields.
+3) dispose() method
+   - Disposes both controllers to avoid memory leaks.
+4) signUp() method:
+   - Reads and trims input values.
+   - Checks if both fields are non-empty.
+   - If valid: assigns values to savedEmail/savedPassword from auth.dart.
+   - Then Navigator.pushReplacement(...HomePage())
+     (replace page so user does not return to sign-up on back press).
+   - If invalid: SnackBar with error message.
+5) build() returns Scaffold with:
+   - AppBar title "Create Account"
+   - Email field
+   - Password field (obscureText true)
+   - Create Account button that calls signUp
+
+
+----------------------------------
+FILE: lib/login_page.dart
+----------------------------------
+Purpose:
+Validate typed credentials against saved credentials.
+
+Code meaning:
+1) StatefulWidget with two controllers.
+2) dispose() method:
+   - Disposes both controllers to avoid memory leaks.
+3) login() method:
+   - Reads and trims input values.
+   - Compares entered email/password with savedEmail/savedPassword.
+   - If both match: Navigator.pushReplacement(...HomePage())
+   - Else: show SnackBar "Wrong email or password".
+4) build() is similar to SignUp page:
+   - Email and password TextFields
+   - Log In button triggers login().
+
+
+----------------------------------
+FILE: lib/home_page.dart
+----------------------------------
+Purpose:
+Show feed of videos and open player page.
+
+Code meaning:
+1) Imports:
+   - video_card.dart (card UI)
+   - welcome_page.dart (for logout destination)
+   - video_player_page.dart (for playback)
+2) class HomePage extends StatelessWidget
+3) videos list:
+   - A static const List<Map<String, String>>
+   - Each item has:
+     title, channel, views, videoUrl, thumbnailUrl
+4) AppBar:
+   - Left title row: play icon + MyTube text
+   - Right action: logout icon
+5) Logout action uses Navigator.pushAndRemoveUntil(...WelcomePage(), false)
+   - Sends user to welcome page and clears navigation history.
+6) body uses ListView.builder
+   - Efficiently builds cards for each video item.
+7) Each item is wrapped in GestureDetector
+   - onTap opens VideoPlayerPage(videoUrl: ...)
+8) Inside child VideoCard(...)
+   - Passes title/channel/views/thumbnailUrl to reusable card widget.
+
+
+----------------------------------
+FILE: lib/video_card.dart
+----------------------------------
+Purpose:
+Reusable UI widget for one video row/card.
+
+Code meaning:
+1) StatelessWidget with constructor parameters:
+   - title, channel, views, thumbnailUrl
+2) build() returns Column containing:
+   - Thumbnail section:
+     Stack with Image.network + centered play icon overlay.
+   - Image error fallback:
+     If image fails, show grey box with error icon.
+   - Info row:
+     CircleAvatar + text column with title and metadata.
+   - Divider at bottom.
+
+
+----------------------------------
+FILE: lib/video_player_page.dart
+----------------------------------
+Purpose:
+Play selected video from URL.
+
+Code meaning:
+1) import package:video_player/video_player.dart
+   - External plugin for media playback.
+2) StatefulWidget because playback state changes.
+3) Input field:
+   final String videoUrl;
+   - Receives selected video URL from Home page.
+4) State variables:
+   - VideoPlayerController _controller
+5) initState()
+   - Creates controller using VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl)).
+   - Calls initialize() and then setState() to rebuild UI once ready.
+   - Uses mounted check before setState() for safer async update.
+6) dispose()
+   - Calls _controller.dispose() to free resources.
+7) _togglePlayPause()
+   - Returns early if video is not initialized yet.
+   - If playing -> pause
+   - Else -> play
+8) Floating action button icon:
+   - Reads _controller.value.isPlaying directly.
+   - No extra boolean state is needed.
+9) build()
+   - AppBar title "Video Player"
+   - Body:
+     If initialized -> AspectRatio + VideoPlayer widget
+     Else -> CircularProgressIndicator
+   - FloatingActionButton to play/pause.
+
+
+==================================================
+3) DEPENDENCY EXPLANATION
+==================================================
+
+In pubspec.yaml:
+1) flutter sdk
+   - Core framework.
+2) cupertino_icons
+   - iOS-style icons package.
+3) video_player
+   - Required for actual video playback.
+
+
+==================================================
+4) HOW TO REWRITE THIS PROJECT QUICKLY IN LAB
+==================================================
+
+If teacher deletes a file, rebuild in this exact order:
+
+1) Create main.dart
+   - MaterialApp -> home WelcomePage.
+2) Create auth.dart
+   - savedEmail and savedPassword globals.
+3) Create welcome_page.dart
+   - App icon/name + Sign Up and Log In buttons.
+4) Create signup_page.dart
+   - Two text fields, save values to auth.dart, go Home.
+5) Create login_page.dart
+   - Compare values with auth.dart, go Home if valid.
+6) Create home_page.dart
+   - Hardcoded videos list + ListView + logout + tap to player.
+7) Create video_card.dart
+   - Thumbnail image + metadata layout.
+8) Create video_player_page.dart
+   - VideoPlayerController.networkUrl + play/pause FAB.
+9) Add dependency in pubspec.yaml:
+   video_player: ^2.8.7
+10) Run:
+   flutter pub get
+   flutter run -d chrome   (or your device)
+
+
+==================================================
+5) KNOWN LIMITATIONS (INTENTIONAL FOR SIMPLICITY)
+==================================================
+
+1) Auth is not real security (plain in-memory strings).
+2) Credentials reset when app closes.
+3) No backend/database.
+4) No search, no comments, no subscriptions.
+5) Video titles and thumbnails may not perfectly match content.
+   - Kept as future improvement as requested.
+
+
+==================================================
+6) ONE-SCREEN MEMORY CHEAT SHEET
+==================================================
+
+Use this mental pattern:
+"main -> welcome -> signup/login -> home(list) -> player"
+
+And this coding pattern:
+1) Inputs with TextEditingController
+2) Validate in button function
+3) Navigate with Navigator.push / pushReplacement
+4) Reusable card widget for repeated UI
+5) Stateful page when controller/state changes
+
+This is enough to recreate the full app quickly.
