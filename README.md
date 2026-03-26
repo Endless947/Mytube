@@ -40,15 +40,4 @@ This is a simple YouTube-style Flutter app made for lab practice.
 
 You can also run on Android/iOS if your local setup is configured.
 
-## Rebuild Order (If A File Gets Deleted In Lab)
-
-1. `main.dart`
-2. `auth.dart`
-3. `welcome_page.dart`
-4. `signup_page.dart`
-5. `login_page.dart`
-6. `home_page.dart`
-7. `video_card.dart`
-8. `video_player_page.dart`
-
 Detailed explanation is available in `description.txt`.
