@@ -8,44 +8,50 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.play_circle_fill, size: 80, color: Colors.red),
-            const SizedBox(height: 16),
+            Icon(Icons.play_circle_fill, size: 80, color: Colors.red),
+            SizedBox(height: 16),
             Text(
               'MyTube',
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 8),
+            Text(
+              'Watch videos anytime, anywhere',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            SizedBox(height: 40),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                minimumSize: const Size(200, 50),
+                minimumSize: Size(200, 50),
               ),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignUpPage()),
+                  MaterialPageRoute(builder: (context) => SignUpPage()),
                 );
               },
               child: Text(
                 'Sign Up',
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(minimumSize: const Size(200, 50)),
+            SizedBox(height: 16),
+            TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
-              child: const Text('Log In', style: TextStyle(fontSize: 18)),
+              child: Text(
+                'Log In',
+                style: TextStyle(fontSize: 18, color: Colors.red),
+              ),
             ),
           ],
         ),

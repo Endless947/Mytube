@@ -8,8 +8,8 @@ This is a simple YouTube-style Flutter app made for lab practice.
 2. Saves sign-up email/password in memory (for demo only).
 3. Lets user log in with the same saved credentials.
 4. Shows a list of sample videos with thumbnails.
-5. Opens a video player screen when a card is tapped.
-6. Allows logout back to welcome page.
+5. Tapping a video opens a detail screen showing the video title.
+6. Allows logout back to the welcome page.
 
 ## Current Scope (Intentionally Simple)
 
@@ -17,21 +17,27 @@ This is a simple YouTube-style Flutter app made for lab practice.
 2. No real account security.
 3. No search/comments/subscriptions.
 4. Data is hardcoded in the app.
+5. No video_player plugin — video screen is a simple static page.
 
 ## Main Files
 
-1. `lib/main.dart` - App entry point.
-2. `lib/welcome_page.dart` - Landing screen.
-3. `lib/signup_page.dart` - Sign-up form.
-4. `lib/login_page.dart` - Login form.
-5. `lib/auth.dart` - In-memory credential variables.
-6. `lib/home_page.dart` - Video list screen.
-7. `lib/video_card.dart` - Reusable video card widget.
-8. `lib/video_player_page.dart` - Video playback screen.
+1. `lib/main.dart` — App entry point.
+2. `lib/welcome_page.dart` — Landing screen.
+3. `lib/signup_page.dart` — Sign-up form.
+4. `lib/login_page.dart` — Login form.
+5. `lib/auth.dart` — In-memory credential variables.
+6. `lib/home_page.dart` — Video list screen (Card + ListTile).
+7. `lib/video_player_page.dart` — Video detail screen (Icon + Text + Button).
+
+## Widgets Used (All Beginner-Friendly)
+
+`Text` · `Icon` · `Image` · `Card` · `ListTile`  
+`TextField` · `ElevatedButton` · `TextButton` · `IconButton`  
+`ListView.builder` · `Navigator`
 
 ## Dependencies
 
-1. `video_player` - Used for playing network videos.
+No third-party dependencies — only the Flutter SDK and `cupertino_icons`.
 
 ## Run
 
